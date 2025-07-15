@@ -36,6 +36,7 @@ actions/
   <action-name>/       # Per-action directory
     action.yml        # Action definition
     README.md         # Specific documentation
+    src/              # Action logic
     tests/            # Automated tests (optional)
 ```
 
