@@ -2,10 +2,8 @@ name: Test Actions
 on:
   push:
     branches: [ main ]
-    paths: ['actions/**']
   pull_request:
     branches: [ main ]
-    paths: ['actions/**']
 
 jobs:
   test-all-actions:
@@ -19,7 +17,7 @@ jobs:
           for action_dir in *; do
             if [ -f "$action_dir/tests/test-cases.sh" ]; then
               echo "→ Testing $action_dir"
-              cd "$action_dir"
+              cd "$action_dir/tests"
               chmod +x test-cases.sh
               ./test-cases.sh || exit 1
               cd ../..
