@@ -20,8 +20,8 @@ jobs:
             if [ -f "$action_dir/tests/test-cases.sh" ]; then
               echo "→ Testing $action_dir"
               cd "$action_dir"
-              chmod +x test.sh
-              ./test.sh || exit 1
+              chmod +x test-cases.sh
+              ./test-cases.sh || exit 1
               cd ../..
             fi
           done
