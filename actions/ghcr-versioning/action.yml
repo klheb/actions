@@ -1,0 +1,131 @@
+name: 'GHCR Versioning Action'
+description: 'Advanced semantic versioning with staging/production support'
+branding:
+  icon: 'git-commit'
+  color: 'blue'
+
+inputs:
+  current_branch:
+    description: 'Current branch name'
+    required: true
+  commit_message:
+    description: 'Last commit message'
+    required: true
+  prod_branch:
+    description: 'Production branch name'
+    default: 'main'
+  staging_branch:
+    description: 'Staging branch name'
+    default: 'staging'
+  prod_prefix:
+    description: 'Tag prefix for production'
+    default: 'v'
+  staging_prefix:
+    description: 'Tag prefix for staging'
+    default: 'staging-v'
+  major_trigger:
+    description: 'Commit message trigger for major version'
+    default: '[MAJOR]'
+  minor_trigger:
+    description: 'Commit message trigger for minor version'
+    default: '[MINOR]'
+  rc_suffix:
+    description: 'Release candidate suffix'
+    default: '-rc.'
+  fallback_version:
+    description: 'Fallback base version'
+    default: '0.0.0'
+  docker_repository:
+    description: 'Docker repository path'
+    default: '${{ github.repository }}'
+
+outputs:
+  image_tag:
+    description: 'Complete Docker image tag'
+    value: ${{ steps.version_calc.outputs.image_tag }}
+  additional_tag:
+    description: 'Additional Docker tag (latest/staging-latest)'
+    value: ${{ steps.version_calc.outputs.additional_tag }}
+  new_version:
+    description: 'New version tag'
+    value: ${{ steps.version_calc.outputs.new_version }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository (for tag access)
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Configure Git
+      shell: bash
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Calculate versions
+      id: version_calc
+      shell: bash
+      run: |
+        # Détection du type de bump
+        if [[ "${{ inputs.commit_message }}" == *"${{ inputs.major_trigger }}"* ]]; then
+          bump_type="major"
+        elif [[ "${{ inputs.commit_message }}" == *"${{ inputs.minor_trigger }}"* ]]; then
+          bump_type="minor"
+        else
+          bump_type="patch"
+        fi
+
+        # Récupération des dernières versions
+        MAIN_TAG=$(git describe --tags --match "${{ inputs.prod_prefix }}*" --abbrev=0 2>/dev/null || echo "${{ inputs.prod_prefix }}${{ inputs.fallback_version }}")
+        STAGING_TAG=$(git describe --tags --match "${{ inputs.staging_prefix }}*" --abbrev=0 2>/dev/null || echo "${{ inputs.staging_prefix }}${{ inputs.fallback_version }}${{ inputs.rc_suffix }}0")
+
+        # Extraction des numéros de version
+        MAIN_VERSION=${MAIN_TAG#${{ inputs.prod_prefix }}}
+        STAGING_BASE=${STAGING_TAG#${{ inputs.staging_prefix }}}
+        STAGING_BASE=${STAGING_BASE%${{ inputs.rc_suffix }}*}
+        STAGING_RC=${STAGING_TAG#*${{ inputs.rc_suffix }}}
+        STAGING_RC=${STAGING_RC:-0}
+
+        # Logique de versioning
+        if [ "${{ inputs.current_branch }}" == "${{ inputs.staging_branch }}" ]; then
+          # STAGING BRANCH
+          IFS='.' read -r major minor patch <<< "$MAIN_VERSION"
+          case "$bump_type" in
+            major)
+              NEW_VERSION="${{ inputs.staging_prefix }}$((major + 1)).0.0${{ inputs.rc_suffix }}0"
+              ;;
+            minor)
+              NEW_VERSION="${{ inputs.staging_prefix }}${major}.$((minor + 1)).0${{ inputs.rc_suffix }}0"
+              ;;
+            *)
+              if [[ "$STAGING_BASE" == "$MAIN_VERSION" ]]; then
+                NEW_VERSION="${{ inputs.staging_prefix }}${STAGING_BASE}${{ inputs.rc_suffix }}$((STAGING_RC + 1))"
+              else
+                NEW_VERSION="${{ inputs.staging_prefix }}${major}.${minor}.$((patch + 1))${{ inputs.rc_suffix }}0"
+              fi
+              ;;
+          esac
+          echo "image_tag=ghcr.io/${{ inputs.docker_repository }}:${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "additional_tag=ghcr.io/${{ inputs.docker_repository }}:staging-latest" >> $GITHUB_OUTPUT
+        else
+          # PRODUCTION BRANCH
+          NEW_VERSION="${{ inputs.prod_prefix }}${STAGING_BASE}"
+          echo "image_tag=ghcr.io/${{ inputs.docker_repository }}:${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "additional_tag=ghcr.io/${{ inputs.docker_repository }}:latest" >> $GITHUB_OUTPUT
+        fi
+
+        echo "new_version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+
+        # Validation que le tag n'existe pas déjà
+        if git rev-parse -q --verify "refs/tags/${NEW_VERSION}" >/dev/null; then
+          echo "::error::Tag ${NEW_VERSION} already exists!"
+          exit 1
+        fi
+
+    - name: Output results
+      shell: bash
+      run: |
+        echo "New version: ${{ steps.version_calc.outputs.new_version }}"
+        echo "Docker tag: ${{ steps.version_calc.outputs.image_tag }}"
