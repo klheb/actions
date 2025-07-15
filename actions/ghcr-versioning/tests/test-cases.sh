@@ -17,7 +17,7 @@ run_test() {
   git -C "$TEMP_DIR" config user.email "test@example.com"
   git -C "$TEMP_DIR" commit --allow-empty -m "Initial commit" -q
   git -C "$TEMP_DIR" tag -a "v0.0.0" -m "Initial version"
-  git -C "$TEMP_DIR" tag -a "staging-v0.0.0-rc.1" -m "Initial staging version"
+  git -C "$TEMP_DIR" tag -a "staging-v0.0.1-rc.1" -m "Initial staging version"
 
   export COMMIT_MESSAGE="$commit_msg"
   export CURRENT_BRANCH="$branch"
@@ -54,7 +54,7 @@ echo -e "\n=== 🧪 Running Versioning Tests ===\n"
 
 run_test "staging" "[MAJOR] Breaking change" "staging-v1.0.0-rc.0"
 run_test "staging" "[MINOR] New feature" "staging-v0.1.0-rc.0"
-run_test "staging" "Simple patch" "staging-v0.0.0-rc.2"
+run_test "staging" "Simple patch" "staging-v0.0.1-rc.2"
 run_test "main" "Release prod" "v0.0.1"
 
 echo -e "\n🎉 All tests passed!"

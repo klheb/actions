@@ -42,9 +42,9 @@ if [[ "$CURRENT_BRANCH" == "$STAGING_BRANCH" ]]; then
       ;;
     *)
       if [[ "$STAGING_BASE" == "$MAIN_VERSION" ]]; then
-        NEW_VERSION="${STAGING_PREFIX}${STAGING_BASE}${RC_SUFFIX}$((STAGING_RC + 1))"
-      else
         NEW_VERSION="${STAGING_PREFIX}${major}.${minor}.$((patch + 1))${RC_SUFFIX}0"
+      else
+        NEW_VERSION="${STAGING_PREFIX}${STAGING_BASE}${RC_SUFFIX}$((STAGING_RC + 1))"
       fi
       ;;
   esac
