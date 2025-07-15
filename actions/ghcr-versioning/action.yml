@@ -79,7 +79,7 @@ runs:
         export RC_SUFFIX="${{ inputs.rc_suffix }}"
         export FALLBACK_VERSION="${{ inputs.fallback_version }}"
         export DOCKER_REPOSITORY="${{ inputs.docker_repository }}"
-        bash ./src/calculate-version.sh
+        bash ${GITHUB_ACTION_PATH}/src/calculate-versions.sh
 
     - name: Output results
       shell: bash
