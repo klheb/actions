@@ -1,0 +1,27 @@
+name: Test Actions
+on:
+  push:
+    branches: [ main ]
+    paths: ['actions/**']
+  pull_request:
+    branches: [ main ]
+    paths: ['actions/**']
+
+jobs:
+  test-all-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Find and test all actions
+        run: |
+          cd actions
+          for action_dir in *; do
+            if [ -f "$action_dir/tests/test-cases.sh" ]; then
+              echo "→ Testing $action_dir"
+              cd "$action_dir"
+              chmod +x test.sh
+              ./test.sh || exit 1
+              cd ../..
+            fi
+          done
