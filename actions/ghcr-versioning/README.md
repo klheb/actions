@@ -3,17 +3,17 @@
 ![GitHub Action](https://img.shields.io/badge/action-GitHub-blue)
 ![Versioning](https://img.shields.io/badge/version-semantic--versioning-orange)
 
-Action GitHub pour un versioning sémantique avancé avec support des branches staging/production et publication automatique sur GHCR.
+GitHub Action for advanced semantic versioning with staging/production branch support and automatic GHCR publishing.
 
-## Fonctionnalités
+## Features
 
-- 🚀 Génération automatique de versions (SemVer)
-- 🌿 Support des workflows staging/production
-- 🏷️ Génération de tags Docker pour GHCR
-- 🔍 Détection des bumps MAJOR/MINOR via messages de commit
-- 🛠️ Entièrement configurable
+- 🚀 Automatic version generation (SemVer)
+- 🌿 Staging/production workflow support
+- 🏷️ Docker tag generation for GHCR
+- 🔍 MAJOR/MINOR bump detection via commit messages
+- 🛠️ Fully configurable
 
-## Utilisation Basique
+## Basic Usage
 
 ```yaml
 - uses: klheb/actions/actions/ghcr-versioning@main
@@ -22,7 +22,7 @@ Action GitHub pour un versioning sémantique avancé avec support des branches s
     commit_message: ${{ github.event.head_commit.message }}
 ```
 
-## Configuration Complète
+## Complete Configuration
 
 ```yaml
 - uses: klheb/actions/actions/ghcr-versioning@main
@@ -30,30 +30,30 @@ Action GitHub pour un versioning sémantique avancé avec support des branches s
   with:
     current_branch: ${{ github.ref_name }}
     commit_message: ${{ github.event.head_commit.message }}
-    prod_branch: 'main'                   # Optionnel
-    staging_branch: 'staging'             # Optionnel
-    prod_prefix: 'v'                      # Optionnel
-    staging_prefix: 'staging-v'           # Optionnel
-    major_trigger: '[MAJOR]'              # Optionnel
-    minor_trigger: '[MINOR]'              # Optionnel
-    rc_suffix: '-rc.'                     # Optionnel
-    fallback_version: '0.0.0'             # Optionnel
-    docker_repository: ${{ github.repository }} # Optionnel
+    prod_branch: 'main'                   # Optional
+    staging_branch: 'staging'             # Optional
+    prod_prefix: 'v'                      # Optional
+    staging_prefix: 'staging-v'           # Optional
+    major_trigger: '[MAJOR]'              # Optional
+    minor_trigger: '[MINOR]'              # Optional
+    rc_suffix: '-rc.'                     # Optional
+    fallback_version: '0.0.0'             # Optional
+    docker_repository: ${{ github.repository }} # Optional
 ```
 
 ## Outputs
 
-| Nom | Description | Exemple |
+| Name | Description | Example |
 |------|-------------|---------|
-| `new_version` | Nouveau tag de version | `v1.2.3` ou `staging-v1.2.3-rc.0` |
-| `image_tag` | Tag Docker complet | `ghcr.io/org/repo:v1.2.3` |
-| `additional_tag` | Tag additionnel | `latest` ou `staging-latest` |
+| `new_version` | New version tag | `v1.2.3` or `staging-v1.2.3-rc.0` |
+| `image_tag` | Complete Docker tag | `ghcr.io/org/repo:v1.2.3` |
+| `additional_tag` | Additional tag | `latest` or `staging-latest` |
 
-## Cas d'Usage
+## Use Cases
 
-### 1. Versioning Staging
+### 1. Staging Versioning
 
-Sur la branche staging avec commit message `[MINOR] New feature` :
+On staging branch with commit message `[MINOR] New feature`:
 
 ```bash
 staging-v0.1.0-rc.0
@@ -61,9 +61,9 @@ ghcr.io/org/repo:staging-v0.1.0-rc.0
 ghcr.io/org/repo:staging-latest
 ```
 
-### 2. Versioning Production
+### 2. Production Versioning
 
-Sur la branche main avec dernier tag staging `staging-v1.2.3-rc.2` :
+On main branch with last staging tag `staging-v1.2.3-rc.2`:
 
 ```bash
 v1.2.3
@@ -71,25 +71,25 @@ ghcr.io/org/repo:v1.2.3
 ghcr.io/org/repo:latest
 ```
 
-### 3. Bump Major
+### 3. Major Bump
 
-Commit message `[MAJOR] Breaking change` sur staging :
+Commit message `[MAJOR] Breaking change` on staging:
 
 ```bash
 staging-v2.0.0-rc.0
 ```
 
-### 4. Bump Patch
+### 4. Patch Bump
 
-Commit standard sur staging avec version prod `v1.2.3` :
+Standard commit on staging with prod version `v1.2.3`:
 
 ```bash
 staging-v1.2.4-rc.0
 ```
 
-## Configuration Avancée
+## Advanced Configuration
 
-### Triggers personnalisés
+### Custom Triggers
 
 ```yaml
 with:
@@ -97,7 +97,7 @@ with:
   minor_trigger: '[FEAT]'
 ```
 
-### Préfixes personnalisés
+### Custom Prefixes
 
 ```yaml
 with:
@@ -105,7 +105,7 @@ with:
   staging_prefix: 'dev-'
 ```
 
-## Workflow Complet Exemple
+## Complete Workflow Example
 
 ```yaml
 name: Build and Version
@@ -133,7 +133,7 @@ jobs:
           push: true
 ```
 
-## Dépendances
+## Requirements
 
-- Accès en écriture aux tags Git
-- `fetch-depth: 0` pour accéder à l'historique des tags
+- Write access to Git tags
+- `fetch-depth: 0` to access full tag history

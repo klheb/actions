@@ -3,24 +3,24 @@
 ![Actions Status](https://img.shields.io/badge/status-active-success)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-Mon référentiel central d'actions GitHub personnalisées, réutilisables dans tous mes projets.
+My central repository of custom GitHub Actions, reusable across all my projects.
 
-## 📦 Liste des Actions Disponibles
+## 📦 Available Actions
 
-| Action | Description | Lien |
+| Action | Description | Link |
 |--------|-------------|------|
-| `ghcr-versioning` | Versioning sémantique automatique | [README](./actions/ghcr-versioning/README.md) |
-| *(D'autres à venir...)* | | |
+| `ghcr-versioning` | Automatic semantic versioning | [README](./actions/ghcr-versioning/README.md) |
+| *(More coming soon...)* | | |
 
-## 🚀 Utilisation
+## 🚀 Usage
 
-Toutes les actions sont accessibles via :
+All actions are accessible via:
 
 ```yaml
-uses: klheb/actions/actions/<NOM_ACTION>@main
+uses: klheb/actions/actions/<ACTION_NAME>@main
 ```
 
-### Exemple Basique
+### Basic Example
 
 ```yaml
 steps:
@@ -29,24 +29,24 @@ steps:
       current_branch: ${{ github.ref_name }}
 ```
 
-## 🏗 Structure du Repository
+## 🏗 Repository Structure
 
 ```bash
 actions/
-  <nom-action>/          # Dossier par action
-    action.yml           # Définition de l'action
-    README.md            # Documentation spécifique
-    tests/               # Tests automatisés (optionnel)
+  <action-name>/       # Per-action directory
+    action.yml        # Action definition
+    README.md         # Specific documentation
+    tests/            # Automated tests (optional)
 ```
 
-## 📚 Documentation par Action
+## 📚 Per-Action Documentation
 
-Chaque action possède sa propre documentation détaillant :
+Each action has its own documentation detailing:
 
-- 📌 Son objectif
-- ⚙️ Ses paramètres d'entrée
-- 📤 Ses sorties
-- 🛠 Exemples d'utilisation
-- 🔧 Cas particuliers
+- 📌 Purpose
+- ⚙️ Input parameters
+- 📤 Outputs
+- 🛠 Usage examples
+- 🔧 Edge cases
 
-Consultez le README dans chaque sous-dossier d'action.
+Consult the README in each action subdirectory.
